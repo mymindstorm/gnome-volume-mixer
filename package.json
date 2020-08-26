@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "init": "ts-for-gir generate",
-    "build": "tsc -p . && rm -rf dist && mkdir dist && cp build/src/* dist && cp metadata.json dist && cd dist && zip -p volume-mixer * "
+    "build": "rm -rf dist && mkdir dist && tsc && cp metadata.json dist && cp build/src/* dist && cd dist && zip -p volume-mixer * "
   },
   "author": "",
   "license": "MIT",
