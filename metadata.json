@@ -2,7 +2,7 @@
   "shell-version": ["3.36"],
   "uuid": "volume-mixer@evermiss.net",
   "orginal-author": "mymindstorm@evermiss.net",
-  "name": "Volume Mixer",
+  "name": "Application Volume Mixer",
   "description": "Control volume output per-application",
   "url": "https://github.com/mymindstorm/gnome-volume-mixer"
 }

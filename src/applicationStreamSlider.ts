@@ -19,6 +19,7 @@ export var ApplicationStreamSlider = class extends VolumeStatus.StreamSlider {
 
       this.item.remove_child(this._slider);
       this._vbox.add(this._slider);
+      this._slider.set_height(32);
 
       this.item.actor.add(this._vbox);
     }
