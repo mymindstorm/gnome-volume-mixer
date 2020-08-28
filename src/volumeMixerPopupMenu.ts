@@ -1,5 +1,4 @@
-import { MixerControl, MixerSinkInput } from "../@types/Gjs/Gvc-1.0";
-import { Label } from "../@types/Gjs/St-1.0";
+import { MixerControl, MixerSinkInput, MixerStream } from "../@types/Gjs/Gvc-1.0";
 import { ApplicationStreamSlider } from "./applicationStreamSlider";
 
 // https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/master/js/ui/popupMenu.js
@@ -22,6 +21,10 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
         this._control = Volume.getMixerControl();
         this._control.connect("stream-added", this._streamAdded.bind(this));
         this._control.connect("stream-removed", this._streamRemoved.bind(this));
+
+        for (const stream of this._control.get_streams()) {
+            this._streamAdded(this._control, stream.get_id())
+        }
     }
 
     _streamAdded(control: MixerControl, id: number) {
@@ -43,7 +46,7 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
         this.addMenuItem(this._applicationStreams[id].item);
     }
 
-    _streamRemoved(control: MixerControl, id: number) {
+    _streamRemoved(_control: MixerControl, id: number) {
         if (id in this._applicationStreams) {
             this._applicationStreams[id].item.destroy();
             delete this._applicationStreams[id];
