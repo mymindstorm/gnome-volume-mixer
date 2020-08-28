@@ -1,6 +1,8 @@
-import { MixerControl, MixerSink } from "../@types/Gjs/Gvc-1.0";
+import { MixerControl, MixerSinkInput } from "../@types/Gjs/Gvc-1.0";
+import { Label } from "../@types/Gjs/St-1.0";
 import { ApplicationStreamSlider } from "./applicationStreamSlider";
 
+// https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/master/js/ui/popupMenu.js
 const PopupMenu = imports.ui.popupMenu;
 // https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/master/js/ui/status/volume.js
 const Volume = imports.ui.status.volume;
@@ -9,7 +11,12 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
     constructor() {
         super();
         this._applicationStreams = {};
-        // TODO: This only shows if it detects an item above it
+        
+        // The PopupSeparatorMenuItem needs something above and below it or it won't display
+        this._hiddenItem = new PopupMenu.PopupBaseMenuItem();
+        this._hiddenItem.set_height(0)
+        this.addMenuItem(this._hiddenItem);
+
         this.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
         this._control = Volume.getMixerControl();
@@ -28,7 +35,7 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
             return;
         }
 
-        if (!(stream instanceof MixerSink)) {
+        if (!(stream instanceof MixerSinkInput)) {
             return;
         }
 
@@ -38,7 +45,7 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
 
     _streamRemoved(control: MixerControl, id: number) {
         if (id in this._applicationStreams) {
-            this._applicationStreams[id].destroy();
+            this._applicationStreams[id].item.destroy();
             delete this._applicationStreams[id];
         }
     }
