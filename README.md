@@ -1,6 +1,6 @@
 # Gnome Application Volume Mixer
 
-This Gnome extension adds volume sliders for every application emitting audio in the system menu.
+Gnome extension that adds volume sliders for every application emitting audio in the system menu.
 
 TODO: Screenshot / GIF
 
