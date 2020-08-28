@@ -8,5 +8,5 @@ module.exports = {
     '/usr/lib64/mutter-6'
   ],
   outdir: './@types',
-  ignore: []
+  ignore: ["Gio-2.0"]
 }
