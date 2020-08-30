@@ -6,7 +6,7 @@ Gnome extension that adds volume sliders for every application emitting audio in
 
 ### Install
 
-Gnome Extensions - wating on review
+[Gnome Extensions](https://extensions.gnome.org/extension/3499/application-volume-mixer/)
 
 Manually:
 
