@@ -1,4 +1,4 @@
-import { MixerControl, MixerSinkInput, MixerStream } from "../@types/Gjs/Gvc-1.0";
+import { MixerControl, MixerSinkInput } from "../@types/Gjs/Gvc-1.0";
 import { ApplicationStreamSlider } from "./applicationStreamSlider";
 
 // https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/master/js/ui/popupMenu.js
