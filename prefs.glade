@@ -38,6 +38,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="placeholder_text" translatable="yes">Application name</property>
+            <signal name="activate" handler="addIgnoreStream" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -67,7 +68,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <signal name="clicked" handler="addIgnoreStream" object="ignore-diag-input" swapped="no"/>
+            <signal name="clicked" handler="addIgnoreStream" swapped="no"/>
             <style>
               <class name="suggested-action"/>
             </style>
