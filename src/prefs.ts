@@ -61,7 +61,7 @@ class PrefsWidget {
 
   private hideAddIgnoreDiag() {
     const ignoreAppEntry = this.builder.get_object("ignore-diag-input") as Entry;
-    ignoreAppEntry.set_text("Application name");
+    ignoreAppEntry.set_text("");
     this.diag?.hide();
   }
 

@@ -1,3 +1,4 @@
+import { Settings, SettingsSchema, SettingsSchemaSource } from "../@types/Gjs/Gio-2.0";
 import { MixerControl, MixerSinkInput } from "../@types/Gjs/Gvc-1.0";
 import { ApplicationStreamSlider } from "./applicationStreamSlider";
 
@@ -5,6 +6,8 @@ import { ApplicationStreamSlider } from "./applicationStreamSlider";
 const PopupMenu = imports.ui.popupMenu;
 // https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/master/js/ui/status/volume.js
 const Volume = imports.ui.status.volume;
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
 
 export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
     constructor() {
@@ -22,9 +25,21 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
         this._control.connect("stream-added", this._streamAdded.bind(this));
         this._control.connect("stream-removed", this._streamRemoved.bind(this));
 
-        for (const stream of this._control.get_streams()) {
-            this._streamAdded(this._control, stream.get_id())
-        }
+        let gschema = SettingsSchemaSource.new_from_directory(
+            Me.dir.get_child('schemas').get_path(),
+            SettingsSchemaSource.get_default(),
+            false
+        );
+
+        this.settings = new Settings({
+            settings_schema: gschema.lookup('net.evermiss.mymindstorm.volume-mixer', true) as SettingsSchema
+        });
+
+        this.settings.connect('changed::ignored-streams', () => {
+            this._updateStreams();
+        });
+
+        this._updateStreams();
     }
 
     _streamAdded(control: MixerControl, id: number) {
@@ -42,6 +57,10 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
             return;
         }
 
+        if (this._ignoredStreams.indexOf(stream.get_name()) !== -1) {
+            return;
+        }
+
         this._applicationStreams[id] = new ApplicationStreamSlider(stream);
         this.addMenuItem(this._applicationStreams[id].item);
     }
@@ -50,6 +69,22 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
         if (id in this._applicationStreams) {
             this._applicationStreams[id].item.destroy();
             delete this._applicationStreams[id];
+        }
+    }
+
+    _updateStreams() {
+        for (const id in this._applicationStreams) {
+            this._applicationStreams[id].item.destroy();
+            delete this._applicationStreams[id];
+        }
+
+        this._ignoredStreams = this.settings.get_strv("ignored-streams");
+
+        for (const stream of this._control.get_streams()) {
+            if (this._ignoredStreams.indexOf(stream.get_name()) !== -1) {
+                continue;
+            }
+            this._streamAdded(this._control, stream.get_id())
         }
     }
 };
