@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="net.evermiss.mymindstorm.volume-mixer" path="/net/evermiss/mymindstorm/volume-mixer/">
+    <key name="ignored-streams" type="as">
+      <default>[]</default>
+    </key>
+    <key name="show-description" type="b">
+      <default>false</default>
+    </key>
+  </schema>
+</schemalist>
