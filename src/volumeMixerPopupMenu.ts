@@ -49,15 +49,9 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
         
         const stream = control.lookup_stream_id(id);
 
-        if (stream.is_event_stream) {
-            return;
-        }
-
-        if (!(stream instanceof MixerSinkInput)) {
-            return;
-        }
-
-        if (this._ignoredStreams.indexOf(stream.get_name()) !== -1) {
+        if (stream.is_event_stream ||
+            !(stream instanceof MixerSinkInput) ||
+            this._ignoredStreams.indexOf(stream.get_name()) !== -1) {
             return;
         }
 
@@ -81,9 +75,6 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
         this._ignoredStreams = this.settings.get_strv("ignored-streams");
 
         for (const stream of this._control.get_streams()) {
-            if (this._ignoredStreams.indexOf(stream.get_name()) !== -1) {
-                continue;
-            }
             this._streamAdded(this._control, stream.get_id())
         }
     }
