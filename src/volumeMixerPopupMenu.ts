@@ -35,9 +35,8 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
             settings_schema: gschema.lookup('net.evermiss.mymindstorm.volume-mixer', true) as SettingsSchema
         });
 
-        this.settings.connect('changed::ignored-streams', () => {
-            this._updateStreams();
-        });
+        this.settings.connect('changed::ignored-streams', () => this._updateStreams());
+        this.settings.connect('changed::show-description', () => this._updateStreams());
 
         this._updateStreams();
     }
@@ -55,7 +54,7 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
             return;
         }
 
-        this._applicationStreams[id] = new ApplicationStreamSlider(stream);
+        this._applicationStreams[id] = new ApplicationStreamSlider(stream, this._showStreamDesc);
         this.addMenuItem(this._applicationStreams[id].item);
     }
 
@@ -73,6 +72,7 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
         }
 
         this._ignoredStreams = this.settings.get_strv("ignored-streams");
+        this._showStreamDesc = this.settings.get_boolean("show-description");
 
         for (const stream of this._control.get_streams()) {
             this._streamAdded(this._control, stream.get_id())

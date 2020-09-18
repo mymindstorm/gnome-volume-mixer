@@ -1,5 +1,5 @@
-import { Settings, SettingsSchemaSource } from "../@types/Gjs/Gio-2.0";
-import { Image, Builder, Box, Dialog, Button, ListBox, Entry, Label, ListBoxRow, HBox, ScrolledWindow } from "../@types/Gjs/Gtk-3.0";
+import { Settings, SettingsBindFlags, SettingsSchemaSource } from "../@types/Gjs/Gio-2.0";
+import { Image, Builder, Dialog, Button, ListBox, Entry, Label, ListBoxRow, HBox, ScrolledWindow, Switch } from "../@types/Gjs/Gtk-3.0";
 
 const ExtensionUtils = imports.misc.extensionUtils;
 
@@ -45,6 +45,14 @@ class PrefsWidget {
     this.builder.connect_signals_full((builder, object, signal, handler) => {
       object.connect(signal, (this as any)[handler].bind(this));
     });
+
+    const showDescSwitch = this.builder.get_object("show-desc-switch") as Switch;
+    this.settings.bind(
+      'show-description',
+      showDescSwitch,
+      'active',
+      SettingsBindFlags.DEFAULT
+    );
 
     // Load ignored into list
     for (const ignored of this.ignoreListData) {

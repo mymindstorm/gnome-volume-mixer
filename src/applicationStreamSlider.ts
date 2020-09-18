@@ -5,7 +5,7 @@ import { BoxLayout, Label } from "../@types/Gjs/St-1.0";
 const Volume = imports.ui.status.volume;
 
 export var ApplicationStreamSlider = class extends Volume.StreamSlider {
-  constructor(stream: MixerSinkInput) {
+  constructor(stream: MixerSinkInput, showDesc: boolean) {
     super(Volume.getMixerControl());
 
     this.stream = stream;
@@ -14,7 +14,7 @@ export var ApplicationStreamSlider = class extends Volume.StreamSlider {
     if (stream.get_name()) {
       this._vbox = new BoxLayout({ vertical: true });
 
-      this._label = new Label({ text: stream.get_name() });
+      this._label = new Label({ text: showDesc ? `${stream.get_name()} - ${stream.get_description()}` : stream.get_name() });
       this._vbox.add(this._label);
 
       this.item.remove_child(this._slider);
