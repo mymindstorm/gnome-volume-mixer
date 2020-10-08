@@ -22,8 +22,8 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
         this.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
         this._control = Volume.getMixerControl();
-        this._control.connect("stream-added", this._streamAdded.bind(this));
-        this._control.connect("stream-removed", this._streamRemoved.bind(this));
+        this._streamAddedEventId = this._control.connect("stream-added", this._streamAdded.bind(this));
+        this._streamRemovedEventId = this._control.connect("stream-removed", this._streamRemoved.bind(this));
 
         let gschema = SettingsSchemaSource.new_from_directory(
             Me.dir.get_child('schemas').get_path(),
@@ -35,8 +35,7 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
             settings_schema: gschema.lookup('net.evermiss.mymindstorm.volume-mixer', true) as SettingsSchema
         });
 
-        this.settings.connect('changed::ignored-streams', () => this._updateStreams());
-        this.settings.connect('changed::show-description', () => this._updateStreams());
+        this._settingsChangedId = this.settings.connect('changed', () => this._updateStreams());
 
         this._updateStreams();
     }
@@ -77,6 +76,13 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
         for (const stream of this._control.get_streams()) {
             this._streamAdded(this._control, stream.get_id())
         }
+    }
+
+    destroy() {
+        this._control.disconnect(this._streamAddedEventId);
+        this._control.disconnect(this._streamRemovedEventId);
+        this.settings.disconnect(this._settingsChangedId);
+        super.destroy();
     }
 };
 
