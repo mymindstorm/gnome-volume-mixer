@@ -1,5 +1,5 @@
 {
-  "shell-version": ["3.36"],
+  "shell-version": ["3.36", "3.38"],
   "uuid": "volume-mixer@evermiss.net",
   "orginal-author": "mymindstorm@evermiss.net",
   "name": "Application Volume Mixer",
