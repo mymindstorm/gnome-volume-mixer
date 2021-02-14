@@ -12,9 +12,11 @@ export var ApplicationStreamSlider = class extends Volume.StreamSlider {
     this._icon.icon_name = stream.get_icon_name();
 
     if (stream.get_name()) {
-      this._vbox = new BoxLayout({ vertical: true });
+      this._vbox = new BoxLayout()
+      this._vbox.vertical = true;
 
-      this._label = new Label({ text: showDesc ? `${stream.get_name()} - ${stream.get_description()}` : stream.get_name() });
+      this._label = new Label();
+      this._label.text = showDesc ? `${stream.get_name()} - ${stream.get_description()}` : stream.get_name();
       this._vbox.add(this._label);
 
       this.item.remove_child(this._slider);
