@@ -3,7 +3,7 @@ module.exports = {
         "gjs"
     ],
     "modules": [
-        "Gtk-4.0",
+        "Gtk-3.0",
         "St-1.0",
         "Gvc-1.0"
     ],
@@ -15,7 +15,6 @@ module.exports = {
     ],
     "outdir": "./@types",
     "ignore": [
-        "Gtk-3.0",
-        "Gdk-3.0"
+        "Gtk-4.0"
     ]
 }
