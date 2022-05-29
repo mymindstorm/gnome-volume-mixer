@@ -1,12 +1,14 @@
-import { VolumeMixerPopupMenu, VolumeMixerPopupMenuClass } from "./volumeMixerPopupMenu";
+'use strict';
+
+import { VolumeMixerPopupMenu } from "./volumeMixerPopupMenu";
 
 const Main = imports.ui.main;
 
-var volumeMixer: VolumeMixerPopupMenuClass | null = null;
+var volumeMixer = null;
 
 function enable() {
     volumeMixer = new VolumeMixerPopupMenu();
-    
+
     Main.panel.statusArea.aggregateMenu._volume.menu.addMenuItem(volumeMixer);
 }
 

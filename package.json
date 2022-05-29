@@ -4,14 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf dist && mkdir -p dist && tsc && glib-compile-schemas schemas && cp -r schemas prefs.glade metadata.json dist && rollup -c ./rollup.config.js && cd dist && zip -r -p volume-mixer * "
+    "build": "rm -rf dist && mkdir -p dist && glib-compile-schemas schemas && cp -r schemas metadata.json dist && rollup -c ./rollup.config.js && cd dist && zip -r -p volume-mixer * "
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^15.0.0",
-    "rollup": "^2.26.6",
-    "rollup-plugin-typescript2": "^0.27.2",
-    "typescript": "^4.0.2"
+    "rollup": "^2.26.6"
   }
 }

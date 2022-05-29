@@ -1,11 +1,12 @@
-import { MixerSinkInput } from "../@types/Gjs/Gvc-1.0";
-import { BoxLayout, Label } from "../@types/Gjs/St-1.0";
+'use strict';
 
-// https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/master/js/ui/status/volume.js
+const { BoxLayout, Label } = imports.gi.St;
+
+// https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/status/volume.js
 const Volume = imports.ui.status.volume;
 
-export var ApplicationStreamSlider = class extends Volume.StreamSlider {
-  constructor(stream: MixerSinkInput, showDesc: boolean) {
+export const ApplicationStreamSlider = class extends Volume.StreamSlider {
+  constructor(stream, showDesc) {
     super(Volume.getMixerControl());
 
     this.stream = stream;
