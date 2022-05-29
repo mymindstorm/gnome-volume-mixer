@@ -8,11 +8,20 @@ Gnome extension that adds volume sliders for every application emitting audio in
 
 [Gnome Extensions](https://extensions.gnome.org/extension/3499/application-volume-mixer/)
 
-Manually:
+#### Building Manually
+
+Required dependencies:
+
+ - https://github.com/sammydre/ts-for-gir (v2.0.0)
+ - Fedora packages:
+    - gtk3-devel
+    - libadwaita-devel
+    - gsettings-desktop-schemas-devel
+    - json-glib-devel
 
 ```bash
 npm i
-npm run init
+ts-for-gir generate
 npm run build
 gnome-extensions install dist/volume-mixer.zip
 ```

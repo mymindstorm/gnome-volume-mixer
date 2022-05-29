@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "init": "ts-for-gir generate",
     "build": "rm -rf dist && mkdir -p dist && tsc && glib-compile-schemas schemas && cp -r schemas prefs.glade metadata.json dist && rollup -c ./rollup.config.js && cd dist && zip -r -p volume-mixer * "
   },
   "author": "",
@@ -13,7 +12,6 @@
     "@rollup/plugin-commonjs": "^15.0.0",
     "rollup": "^2.26.6",
     "rollup-plugin-typescript2": "^0.27.2",
-    "ts-for-gir": "^1.0.1",
     "typescript": "^4.0.2"
   }
 }
