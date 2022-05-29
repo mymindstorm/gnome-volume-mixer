@@ -2,8 +2,8 @@
 
 import { ApplicationStreamSlider } from "./applicationStreamSlider";
 
-const { Settings, SettingsSchema, SettingsSchemaSource } = imports.gi.Gio;
-const { MixerControl, MixerSinkInput } = imports.gi.Gvc;
+const { Settings, SettingsSchemaSource } = imports.gi.Gio;
+const { MixerSinkInput } = imports.gi.Gvc;
 
 // https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/popupMenu.js
 const PopupMenu = imports.ui.popupMenu;
@@ -12,7 +12,7 @@ const Volume = imports.ui.status.volume;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
+export class VolumeMixerPopupMenu extends PopupMenu.PopupMenuSection {
     constructor() {
         super();
         this._applicationStreams = {};
@@ -88,5 +88,3 @@ export class VolumeMixerPopupMenuClass extends PopupMenu.PopupMenuSection {
         super.destroy();
     }
 };
-
-export var VolumeMixerPopupMenu = VolumeMixerPopupMenuClass;
