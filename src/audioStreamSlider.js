@@ -5,7 +5,9 @@ const { BoxLayout, Label } = imports.gi.St;
 // https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/status/volume.js
 const Volume = imports.ui.status.volume;
 
-export class ApplicationStreamSlider extends Volume.StreamSlider {
+export class AudioStreamSlider extends Volume.StreamSlider {
+  _streams = [];
+
   constructor(stream, opts) {
     super(Volume.getMixerControl());
 
@@ -32,5 +34,10 @@ export class ApplicationStreamSlider extends Volume.StreamSlider {
 
       this.item.actor.add(this._vbox);
     }
+  }
+
+  add_stream(stream) {
+    this._streams.push(stream);
+    log("STREAM PUSH! " + stream.get_description())
   }
 };

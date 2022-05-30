@@ -17,5 +17,13 @@
       </choices>
       <default>'block'</default>
     </key>
+    <key name="group-mode" type="s">
+      <choices>
+        <choice value='show-all' />
+        <choice value='group-streams' />
+        <choice value='only-apps' />
+      </choices>
+      <default>'show-all'</default>
+    </key>
   </schema>
 </schemalist>

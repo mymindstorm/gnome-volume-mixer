@@ -60,6 +60,25 @@ export const VolumeMixerPrefsPage = GObject.registerClass({
         showIconRow.add_suffix(showIconToggle);
         showIconRow.activatable_widget = showIconToggle;
 
+        // group-mode
+        const groupModeModel = new Gio.ListStore({ item_type: NameValueStore });
+        groupModeModel.append(new NameValueStore('Show all audio streams', 'show-all'));
+        groupModeModel.append(new NameValueStore('Group streams by app', 'group-streams'));
+        groupModeModel.append(new NameValueStore('Show only apps', 'only-apps'));
+
+        const groupModeRow = new Adw.ComboRow({
+            title: 'Display Mode',
+            subtitle: 'Control how audio streams are shown in the audio mixer.',
+            model: groupModeModel,
+            expression: new Gtk.PropertyExpression(NameValueStore, null, 'name'),
+            selected: this.findCurrentIdxForModel(groupModeModel, 'group-mode')
+        });
+        generalGroup.add(groupModeRow);
+
+        groupModeRow.connect('notify::selected', () => {
+            this.settings.set_string('group-mode', groupModeRow.selectedItem.value);
+        });
+
         // Application filter settings group
         const filterGroup = new Adw.PreferencesGroup({
             title: 'Application Filtering',
@@ -68,24 +87,15 @@ export const VolumeMixerPrefsPage = GObject.registerClass({
         this.add(filterGroup);
 
         // filter-mode
-        const filterModeModel = new Gio.ListStore({ item_type: FilterMode });
-        filterModeModel.append(new FilterMode('Block', 'block'));
-        filterModeModel.append(new FilterMode('Allow', 'allow'));
-
-        const findCurrentFilterMode = () => {
-            for (let i = 0; i < filterModeModel.get_n_items(); i++) {
-                if (filterModeModel.get_item(i).value === this.settings.get_string('filter-mode')) {
-                    return i;
-                }
-            }
-            return -1;
-        }
+        const filterModeModel = new Gio.ListStore({ item_type: NameValueStore });
+        filterModeModel.append(new NameValueStore('Block', 'block'));
+        filterModeModel.append(new NameValueStore('Allow', 'allow'));
 
         const filterModeRow = new Adw.ComboRow({
             title: 'Filter Mode',
             model: filterModeModel,
-            expression: new Gtk.PropertyExpression(FilterMode, null, 'name'),
-            selected: findCurrentFilterMode()
+            expression: new Gtk.PropertyExpression(NameValueStore, null, 'name'),
+            selected: this.findCurrentIdxForModel(filterModeModel, 'filter-mode')
         });
         filterGroup.add(filterModeRow);
 
@@ -104,14 +114,6 @@ export const VolumeMixerPrefsPage = GObject.registerClass({
 
         // Add filter entry button
         this.createAddFilteredAppButtonRow();
-
-        // TODO: modes
-        // - group by application
-        // - group by application but as a dropdown with streams
-        // - show all streams
-        // TODO: go thru github issues
-        // popularity: page 26, 5th from the top
-        // TODO: style
     }
 
     createAddFilteredAppButtonRow() {
@@ -193,9 +195,18 @@ export const VolumeMixerPrefsPage = GObject.registerClass({
         });
         dialog.show();
     }
+
+    findCurrentIdxForModel(model, setting_string) {
+        for (let i = 0; i < model.get_n_items(); i++) {
+            if (model.get_item(i).value === this.settings.get_string(setting_string)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 });
 
-const FilterMode = GObject.registerClass({
+const NameValueStore = GObject.registerClass({
     Properties: {
         'name': GObject.ParamSpec.string(
             'name', 'name', 'name',
@@ -206,7 +217,7 @@ const FilterMode = GObject.registerClass({
             GObject.ParamFlags.READWRITE,
             null),
     },
-}, class FilterMode extends GObject.Object {
+}, class NameValueStore extends GObject.Object {
     _init(name, value) {
         super._init({ name, value });
     }

@@ -1,6 +1,7 @@
 'use strict';
 
-import { ApplicationStreamSlider } from "./applicationStreamSlider";
+import { AppStreamSlider } from "./appStreamSlider";
+import { AudioStreamSlider } from "./audioStreamSlider";
 
 const { Settings, SettingsSchemaSource } = imports.gi.Gio;
 const { MixerSinkInput } = imports.gi.Gvc;
@@ -15,6 +16,11 @@ const Me = ExtensionUtils.getCurrentExtension();
 export class VolumeMixerPopupMenu extends PopupMenu.PopupMenuSection {
     constructor() {
         super();
+        // Holds all streams by stream id
+        // { <stream id>: AudioStreamSlider }
+        this._audioStreams = {};
+        // Holds streams by stream name
+        // { <stream name>: AppStreamSlider }
         this._applicationStreams = {};
 
         // The PopupSeparatorMenuItem needs something above and below it or it won't display
@@ -44,7 +50,7 @@ export class VolumeMixerPopupMenu extends PopupMenu.PopupMenuSection {
     }
 
     _streamAdded(control, id) {
-        if (id in this._applicationStreams) {
+        if (id in this._audioStreams) {
             return;
         }
 
@@ -64,25 +70,42 @@ export class VolumeMixerPopupMenu extends PopupMenu.PopupMenuSection {
             }
         }
 
-        this._applicationStreams[id] = new ApplicationStreamSlider(stream, { showDesc: this._showStreamDesc, showIcon: this._showStreamIcon });
-        this.addMenuItem(this._applicationStreams[id].item);
+        switch (this._groupMode) {
+            case "show-all":
+                this._audioStreams[id] = new AudioStreamSlider(stream, { showDesc: this._showStreamDesc, showIcon: this._showStreamIcon });
+                this.addMenuItem(this._audioStreams[id].item);
+                break;
+
+            case "group-streams":
+            case "only-apps":
+                const name = stream.get_name();
+                if (name) {
+                    if (!this._applicationStreams[name]) {
+                        this._applicationStreams[name] = new AppStreamSlider(name, { });
+                    }
+
+                    this._applicationStreams[name].add_stream(stream);
+                }
+                break;
+        }
     }
 
     _streamRemoved(_control, id) {
-        if (id in this._applicationStreams) {
-            this._applicationStreams[id].item.destroy();
-            delete this._applicationStreams[id];
+        if (id in this._audioStreams) {
+            this._audioStreams[id].item.destroy();
+            delete this._audioStreams[id];
         }
     }
 
     _updateStreams() {
-        for (const id in this._applicationStreams) {
-            this._applicationStreams[id].item.destroy();
-            delete this._applicationStreams[id];
+        for (const id in this._audioStreams) {
+            this._audioStreams[id].item.destroy();
+            delete this._audioStreams[id];
         }
 
         this._filteredApps = this.settings.get_strv("filtered-apps");
         this._filterMode = this.settings.get_string("filter-mode");
+        this._groupMode = this.settings.get_string("group-mode");
         this._showStreamDesc = this.settings.get_boolean("show-description");
         this._showStreamIcon = this.settings.get_boolean("show-icon");
 
