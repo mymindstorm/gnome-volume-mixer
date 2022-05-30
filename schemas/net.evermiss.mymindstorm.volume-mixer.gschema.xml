@@ -2,7 +2,7 @@
 <schemalist>
   <schema id="net.evermiss.mymindstorm.volume-mixer" path="/net/evermiss/mymindstorm/volume-mixer/">
     <key name="filtered-apps" type="as">
-      <default>['Test']</default>
+      <default>[]</default>
     </key>
     <key name="show-description" type="b">
       <default>false</default>

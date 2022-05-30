@@ -1,5 +1,7 @@
 'use strict';
 
+import { VolumeMixerAddFilterDialog } from "./volumeMixerAddFilterDialog";
+
 const { Adw, Gio, Gtk, GObject } = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 
@@ -9,6 +11,7 @@ export const VolumeMixerPrefsPage = GObject.registerClass({
     filterListData = [];
     filteredAppsGroup;
     settings;
+    addFilteredAppButtonRow;
 
     constructor() {
         // TODO: Move most of this into a .ui file.
@@ -99,25 +102,9 @@ export const VolumeMixerPrefsPage = GObject.registerClass({
             this.filteredAppsGroup.add(this.buildFilterListRow(filteredAppName))
         }
 
-        // Add entry button
-        // I wanted to use Adw.PrefrencesRow, but you can't get the 'row-activated' signal unless it's part of a Gtk.ListBox.
-        // Adw.PrefrencesGroup doesn't extend Gtk.ListBox.
-        // TODO: Learn a less hacky to do this. I'm currently too new to GTK to know the best practice.
-        const addFilteredAppRow = new Adw.ActionRow();
-        const addIcon = Gtk.Image.new_from_icon_name("list-add");
-        addIcon.height_request = 40
-        addFilteredAppRow.set_child(addIcon);
-        this.filteredAppsGroup.add(addFilteredAppRow);
-        // It won't send 'activated' signal w/o this being set.
-        addFilteredAppRow.activatable_widget = addIcon;
-        addFilteredAppRow.connect('activated', (callingWidget) => {
-            this.addFilteredApp(callingWidget, this.filterListData)
-        });
+        // Add filter entry button
+        this.createAddFilteredAppButtonRow();
 
-        // TODO: filter apps
-        // - modes: block, allow
-        // - see keyboard settings for inspiration, can i use application chooser?)
-        // - do not allow insert duplicate entires
         // TODO: modes
         // - group by application
         // - group by application but as a dropdown with streams
@@ -127,10 +114,26 @@ export const VolumeMixerPrefsPage = GObject.registerClass({
         // TODO: style
     }
 
+    createAddFilteredAppButtonRow() {
+        // I wanted to use Adw.PrefrencesRow, but you can't get the 'row-activated' signal unless it's part of a Gtk.ListBox.
+        // Adw.PrefrencesGroup doesn't extend Gtk.ListBox.
+        // TODO: Learn a less hacky to do this. I'm currently too new to GTK to know the best practice.
+        this.addFilteredAppButtonRow = new Adw.ActionRow();
+        const addIcon = Gtk.Image.new_from_icon_name("list-add");
+        addIcon.height_request = 40
+        this.addFilteredAppButtonRow.set_child(addIcon);
+        this.filteredAppsGroup.add(this.addFilteredAppButtonRow);
+        // It won't send 'activated' signal w/o this being set.
+        this.addFilteredAppButtonRow.activatable_widget = addIcon;
+        this.addFilteredAppButtonRow.connect('activated', (callingWidget) => {
+            this.showFilteredAppDialog(callingWidget, this.filterListData)
+        });
+    }
+
     buildFilterListRow(filteredAppName) {
         const filterListRow = new Adw.PreferencesRow({
             title: filteredAppName,
-            activatable: false
+            activatable: false,
         });
 
         // Make box for custom row
@@ -171,53 +174,20 @@ export const VolumeMixerPrefsPage = GObject.registerClass({
         this.filteredAppsGroup.remove(filterListRow);
     }
 
-    addFilteredApp(callingWidget, filterListData) {
-        const dialog = new Gtk.Dialog({
-            use_header_bar: true,
-            transient_for: callingWidget.get_root(),
-            destroy_with_parent: true,
-            modal: true,
-            resizable: false,
-            title: "Add Filtered Application"
-        });
-        const addButton = dialog.add_button("Add", Gtk.ResponseType.OK);
-        addButton.get_style_context().add_class('suggested-action');
-        addButton.sensitive = false;
-        dialog.add_button("Cancel", Gtk.ResponseType.CANCEL);
+    addFilteredApp(filteredAppName) {
+        this.filterListData.push(filteredAppName);
+        this.settings.set_strv("filtered-apps", this.filterListData);
+        this.filteredAppsGroup.remove(this.addFilteredAppButtonRow);
+        this.filteredAppsGroup.add(this.buildFilterListRow(filteredAppName));
+        this.filteredAppsGroup.add(this.addFilteredAppButtonRow);
+    }
 
-        const dialogContent = dialog.get_content_area();
-        dialogContent.margin_top = 20
-        dialogContent.margin_bottom = 20
-        dialogContent.margin_end = 20
-        dialogContent.margin_start = 20
-
-        const appNameLabel = new Gtk.Label({
-            label: "Application name",
-            halign: Gtk.Align.START,
-            margin_bottom: 10
-        });
-        dialogContent.append(appNameLabel);
-
-        const appNameEntry = new Gtk.Entry();
-        dialogContent.append(appNameEntry);
-
-        appNameEntry.connect("changed", () => {
-            if (appNameEntry.text.length === 0) {
-                addButton.sensitive = false;
-            } else if (filterListData.indexOf(appNameEntry.text) !== -1) {
-                addButton.sensitive = false;
-            } else {
-                addButton.sensitive = true;
-            }
-        });
-
-        dialog.connect("response", (_dialog, response) => {
+    showFilteredAppDialog(callingWidget, filterListData) {
+        const dialog = new VolumeMixerAddFilterDialog(callingWidget, filterListData);
+        dialog.connect('response', (_dialog, response) => {
             if (response === Gtk.ResponseType.OK) {
-                // TODO: move this to its own class. rename this function to addFilteredAppDialog
-                // TODO: accept a signal for adding to the filterlist in the main class
-                log(appNameEntry.text)
+                this.addFilteredApp(dialog.appNameEntry.text);
             }
-
             dialog.close();
             dialog.destroy();
         });

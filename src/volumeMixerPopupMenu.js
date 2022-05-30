@@ -50,10 +50,18 @@ export class VolumeMixerPopupMenu extends PopupMenu.PopupMenuSection {
 
         const stream = control.lookup_stream_id(id);
 
-        if (stream.is_event_stream ||
-            !(stream instanceof MixerSinkInput) ||
-            this._ignoredStreams.indexOf(stream.get_name()) !== -1) {
+        if (stream.is_event_stream || !(stream instanceof MixerSinkInput)) {
             return;
+        }
+
+        if (this._filterMode === "block") {
+            if (this._filteredApps.indexOf(stream.get_name()) !== -1) {
+                return;
+            }
+        } else if (this._filterMode === "allow") {
+            if (this._filteredApps.indexOf(stream.get_name()) === -1) {
+                return;
+            }
         }
 
         this._applicationStreams[id] = new ApplicationStreamSlider(stream, { showDesc: this._showStreamDesc, showIcon: this._showStreamIcon });
@@ -73,7 +81,8 @@ export class VolumeMixerPopupMenu extends PopupMenu.PopupMenuSection {
             delete this._applicationStreams[id];
         }
 
-        this._ignoredStreams = this.settings.get_strv("ignored-streams");
+        this._filteredApps = this.settings.get_strv("filtered-apps");
+        this._filterMode = this.settings.get_string("filter-mode");
         this._showStreamDesc = this.settings.get_boolean("show-description");
         this._showStreamIcon = this.settings.get_boolean("show-icon");
 
