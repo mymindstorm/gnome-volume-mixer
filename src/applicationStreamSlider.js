@@ -5,12 +5,15 @@ const { BoxLayout, Label } = imports.gi.St;
 // https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/status/volume.js
 const Volume = imports.ui.status.volume;
 
-export const ApplicationStreamSlider = class extends Volume.StreamSlider {
-  constructor(stream, showDesc) {
+export class ApplicationStreamSlider extends Volume.StreamSlider {
+  constructor(stream, opts) {
     super(Volume.getMixerControl());
 
     this.stream = stream;
-    this._icon.icon_name = stream.get_icon_name();
+
+    if (opts.showIcon) {
+      this._icon.icon_name = stream.get_icon_name();
+    }
 
     let name = stream.get_name();
     let description = stream.get_description();
@@ -20,7 +23,7 @@ export const ApplicationStreamSlider = class extends Volume.StreamSlider {
       this._vbox.vertical = true;
 
       this._label = new Label();
-      this._label.text = name && showDesc ? `${name} - ${description}` : (name || description);
+      this._label.text = name && opts.showDesc ? `${name} - ${description}` : (name || description);
       this._vbox.add(this._label);
 
       this.item.remove_child(this._slider);
