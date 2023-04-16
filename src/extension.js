@@ -9,7 +9,7 @@ var volumeMixer = null;
 function enable() {
     volumeMixer = new VolumeMixerPopupMenu();
 
-    Main.panel.statusArea.aggregateMenu._volume.menu.addMenuItem(volumeMixer);
+    Main.panel.statusArea.aggregateMenu._volume.menu.addMenuItem(volumeMixer._subMenu);
 }
 
 function disable() {

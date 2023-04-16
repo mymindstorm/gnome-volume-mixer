@@ -4,6 +4,7 @@ import { ApplicationStreamSlider } from "./applicationStreamSlider";
 
 const { Settings, SettingsSchemaSource } = imports.gi.Gio;
 const { MixerSinkInput } = imports.gi.Gvc;
+const St = imports.gi.St;
 
 // https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/popupMenu.js
 const PopupMenu = imports.ui.popupMenu;
@@ -12,17 +13,12 @@ const Volume = imports.ui.status.volume;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-export class VolumeMixerPopupMenu extends PopupMenu.PopupMenuSection {
+export class VolumeMixerPopupMenu {
     constructor() {
-        super();
+        this._subMenu = new PopupMenu.PopupSubMenuMenuItem("Volume Mixer", true);
+        this._subMenu.icon.icon_name = "audio-volume-high-symbolic";
+
         this._applicationStreams = {};
-
-        // The PopupSeparatorMenuItem needs something above and below it or it won't display
-        this._hiddenItem = new PopupMenu.PopupBaseMenuItem();
-        this._hiddenItem.set_height(0)
-        this.addMenuItem(this._hiddenItem);
-
-        this.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
         this._control = Volume.getMixerControl();
         this._streamAddedEventId = this._control.connect("stream-added", this._streamAdded.bind(this));
@@ -65,7 +61,7 @@ export class VolumeMixerPopupMenu extends PopupMenu.PopupMenuSection {
         }
 
         this._applicationStreams[id] = new ApplicationStreamSlider(stream, { showDesc: this._showStreamDesc, showIcon: this._showStreamIcon });
-        this.addMenuItem(this._applicationStreams[id].item);
+        this._subMenu.menu.addMenuItem(this._applicationStreams[id].item);
     }
 
     _streamRemoved(_control, id) {
@@ -95,6 +91,6 @@ export class VolumeMixerPopupMenu extends PopupMenu.PopupMenuSection {
         this._control.disconnect(this._streamAddedEventId);
         this._control.disconnect(this._streamRemovedEventId);
         this.settings.disconnect(this._settingsChangedId);
-        super.destroy();
+        this._subMenu.destroy();
     }
 };
