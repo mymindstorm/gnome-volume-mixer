@@ -60,6 +60,30 @@ export const VolumeMixerPrefsPage = GObject.registerClass({
         showIconRow.add_suffix(showIconToggle);
         showIconRow.activatable_widget = showIconToggle;
 
+        // old-menu
+        const oldMenuRow = new Adw.ActionRow({ 
+            title: 'Show In Old Way',
+            subtitle: 'Will show all controlls in menu instead of using Volume Mixer Sub Menu. '
+            + '\x0ABeaware that if there are too many audio sources, this option will '
+            + 'overflow the menu' 
+        });
+        generalGroup.add(oldMenuRow);
+
+        const oldMenuToggle = new Gtk.Switch({
+            active: this.settings.get_boolean('old-menu'),
+            valign: Gtk.Align.CENTER
+        });
+
+        this.settings.bind(
+            'old-menu',
+            oldMenuToggle,
+            'active',
+            Gio.SettingsBindFlags.DEFAULT
+        );
+
+        oldMenuRow.add_suffix(oldMenuToggle);
+        oldMenuRow.activatable_widget = oldMenuToggle;
+
         // Application filter settings group
         const filterGroup = new Adw.PreferencesGroup({
             title: 'Application Filtering',
